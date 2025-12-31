@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serial Port Diagnostic</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        h2 { color: #666; border-bottom: 2px solid #27ae60; padding-bottom: 10px; }
+        button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover { background: #229954; }
+        .log {
+            background: #222;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .success { color: #2ecc71; }
+        .error { color: #e74c3c; }
+        .warning { color: #f39c12; }
+        .info { color: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔧 Serial Port Diagnostic Tool</h1>
+        <p>Use this to check if your Arduino is available to the Web Serial API.</p>
+    </div>
+
+    <div class="card">
+        <h2>Step 1: Check Web Serial API Support</h2>
+        <button onclick="checkWebSerialSupport()">Check Support</button>
+        <div class="log" id="supportLog"></div>
+    </div>
+
+    <div class="card">
+        <h2>Step 2: List Available Ports</h2>
+        <button onclick="listPorts()">List All Ports</button>
+        <div class="log" id="portsLog"></div>
+    </div>
+
+    <div class="card">
+        <h2>Step 3: Try to Open Port Selection Dialog</h2>
+        <p><strong>WARNING:</strong> This will show the browser's port selection dialog. Make sure your Arduino is plugged in!</p>
+        <button onclick="requestPort()">Request Port</button>
+        <div class="log" id="requestLog"></div>
+    </div>
+
+    <div class="card">
+        <h2>Step 4: Try to Connect (9600 baud)</h2>
+        <p>First, you must complete Step 3 successfully.</p>
+        <button onclick="testConnect()">Test Connection</button>
+        <div class="log" id="connectLog"></div>
+    </div>
+
+    <script>
+        let selectedPort = null;
+        const supportLog = document.getElementById('supportLog');
+        const portsLog = document.getElementById('portsLog');
+        const requestLog = document.getElementById('requestLog');
+        const connectLog = document.getElementById('connectLog');
+
+        function log(element, message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type || 'info';
+            element.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            element.scrollTop = element.scrollHeight;
+        }
+
+        function checkWebSerialSupport() {
+            supportLog.innerHTML = '';
+            if ('serial' in navigator) {
+                log(supportLog, '✅ Web Serial API is SUPPORTED in this browser!', 'success');
+                log(supportLog, 'Your browser can access Arduino serial ports.', 'success');
+            } else {
+                log(supportLog, '❌ Web Serial API is NOT supported.', 'error');
+                log(supportLog, 'Use Chrome, Edge, or Opera instead.', 'error');
+            }
+        }
+
+        async function listPorts() {
+            portsLog.innerHTML = '';
+            try {
+                if (!('serial' in navigator)) {
+                    log(portsLog, 'Web Serial API not available', 'error');
+                    return;
+                }
+                log(portsLog, 'Attempting to list ports...', 'info');
+                const ports = await navigator.serial.getPorts();
+                
+                if (ports.length === 0) {
+                    log(portsLog, '⚠️ No ports found!', 'warning');
+                    log(portsLog, 'Your Arduino may not be plugged in or recognized.', 'warning');
+                } else {
+                    log(portsLog, `✅ Found ${ports.length} port(s):`, 'success');
+                    ports.forEach((port, i) => {
+                        const info = port.getInfo();
+                        log(portsLog, `Port ${i+1}: USB VID=${info.usbVendorId}, PID=${info.usbProductId}`, 'info');
+                    });
+                }
+            } catch (err) {
+                log(portsLog, `Error: ${err.message}`, 'error');
+            }
+        }
+
+        async function requestPort() {
+            requestLog.innerHTML = '';
+            try {
+                if (!('serial' in navigator)) {
+                    log(requestLog, 'Web Serial API not available', 'error');
+                    return;
+                }
+                log(requestLog, 'Showing port selection dialog...', 'info');
+                log(requestLog, 'You have ~5 seconds to select a port!', 'warning');
+                
+                const port = await navigator.serial.requestPort();
+                
+                if (!port) {
+                    log(requestLog, 'User cancelled port selection', 'warning');
+                    selectedPort = null;
+                } else {
+                    selectedPort = port;
+                    const info = port.getInfo();
+                    log(requestLog, '✅ Port selected!', 'success');
+                    log(requestLog, `VID: ${info.usbVendorId}, PID: ${info.usbProductId}`, 'success');
+                    log(requestLog, 'You can now try "Test Connection" in Step 4', 'success');
+                }
+            } catch (err) {
+                log(requestLog, `Error: ${err.message}`, 'error');
+                selectedPort = null;
+            }
+        }
+
+        async function testConnect() {
+            connectLog.innerHTML = '';
+            try {
+                if (!selectedPort) {
+                    log(connectLog, 'No port selected. Complete Step 3 first!', 'error');
+                    return;
+                }
+                
+                log(connectLog, 'Opening port at 9600 baud...', 'info');
+                await selectedPort.open({ baudRate: 9600 });
+                log(connectLog, '✅ Port opened successfully!', 'success');
+                
+                log(connectLog, 'Waiting for data from Arduino...', 'info');
+                const reader = selectedPort.readable.getReader();
+                const textDecoder = new TextDecoder();
+                let buffer = '';
+                let dataReceived = false;
+
+                // Read for 5 seconds
+                const startTime = Date.now();
+                const timeout = 5000;
+
+                while (Date.now() - startTime < timeout) {
+                    try {
+                        const { value, done } = await Promise.race([
+                            reader.read(),
+                            new Promise((_, reject) => 
+                                setTimeout(() => reject(new Error('Timeout')), timeout - (Date.now() - startTime))
+                            )
+                        ]);
+
+                        if (done) break;
+                        if (!value) continue;
+
+                        buffer += textDecoder.decode(value, { stream: true });
+                        const lines = buffer.split(/\r?\n/);
+                        buffer = lines.pop();
+
+                        for (const line of lines) {
+                            if (line.trim()) {
+                                log(connectLog, `📨 Received: ${line}`, 'success');
+                                dataReceived = true;
+                            }
+                        }
+                    } catch (err) {
+                        break;
+                    }
+                }
+
+                reader.releaseLock();
+                await selectedPort.close();
+
+                if (dataReceived) {
+                    log(connectLog, '✅ SUCCESS! Arduino is sending data!', 'success');
+                } else {
+                    log(connectLog, '⚠️ No data received in 5 seconds', 'warning');
+                    log(connectLog, 'Check that Arduino code is uploaded and running', 'warning');
+                }
+            } catch (err) {
+                log(connectLog, `Error: ${err.message}`, 'error');
+                try { if (selectedPort) await selectedPort.close(); } catch (e) {}
+            }
+        }
+
+        // Auto-check support on load
+        window.addEventListener('load', checkWebSerialSupport);
+    </script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSterile - pH Regulator Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1>🌱 EcoSterile pH Regulator</h1>
+                <p class="subtitle">Real-time pH Monitoring & Control System</p>
+            </div>
+
+            <!-- Crop Selection -->
+            <div class="crop-selector-header">
+                <label for="cropSelector" class="crop-heading">Select Your Crop</label>
+                <select id="cropSelector">
+                    <optgroup label="Cereals / Foodgrains">
+                        <option value="rice" data-min="5.5" data-max="6.5">Rice (Dhaan)</option>
+                        <option value="wheat" data-min="6.0" data-max="7.5">Wheat (Gehun)</option>
+                        <option value="maize" data-min="5.5" data-max="7.5">Maize (Makka/Corn)</option>
+                        <option value="barley" data-min="6.0" data-max="7.5">Barley (Jau)</option>
+                        <option value="sorghum" data-min="5.5" data-max="7.5">Sorghum (Jowar)</option>
+                        <option value="pearl_millet" data-min="5.5" data-max="6.5">Pearl Millet (Bajra)</option>
+                        <option value="finger_millet" data-min="5.5" data-max="7.5">Finger Millet (Ragi/Mandua)</option>
+                    </optgroup>
+
+                    <optgroup label="Pulses (Dal crops)">
+                        <option value="chickpea" data-min="6.0" data-max="7.5">Chickpea (Chana)</option>
+                        <option value="pigeon_pea" data-min="5.5" data-max="7.0">Pigeon Pea (Arhar/Tur)</option>
+                        <option value="black_gram" data-min="6.0" data-max="7.0">Black Gram (Urad)</option>
+                        <option value="green_gram" data-min="6.0" data-max="7.5">Green Gram (Moong)</option>
+                        <option value="lentil" data-min="6.0" data-max="7.5">Lentil (Masoor)</option>
+                        <option value="kidney_bean" data-min="5.5" data-max="7.0">Kidney Beans (Rajma)</option>
+                        <option value="cowpea" data-min="5.5" data-max="7.5">Cowpea (Lobia)</option>
+                        <option value="horse_gram" data-min="5.5" data-max="7.0">Horse Gram (Kulthi)</option>
+                    </optgroup>
+
+                    <optgroup label="Oilseeds">
+                        <option value="mustard" data-min="6.0" data-max="7.5">Mustard</option>
+                        <option value="groundnut" data-min="5.0" data-max="6.5">Groundnut (Moongfali)</option>
+                        <option value="soybean" data-min="6.0" data-max="6.8">Soybean</option>
+                        <option value="sunflower" data-min="5.5" data-max="7.0">Sunflower</option>
+                        <option value="sesame" data-min="6.0" data-max="7.5">Sesame (Til)</option>
+                        <option value="castor" data-min="6.0" data-max="8.0">Castor</option>
+                        <option value="linseed" data-min="6.0" data-max="7.5">Linseed (Alsi)</option>
+                    </optgroup>
+
+                    <optgroup label="Vegetables (Major)">
+                        <option value="tomato" data-min="5.5" data-max="6.8">Tomato</option>
+                        <option value="potato" data-min="5.0" data-max="6.0">Potato</option>
+                        <option value="onion" data-min="6.0" data-max="7.0">Onion</option>
+                        <option value="brinjal" data-min="5.5" data-max="6.5">Brinjal (Baingan)</option>
+                        <option value="cabbage" data-min="6.0" data-max="7.5">Cabbage</option>
+                        <option value="cauliflower" data-min="6.0" data-max="7.5">Cauliflower</option>
+                        <option value="carrot" data-min="6.0" data-max="7.0">Carrot</option>
+                        <option value="spinach" data-min="6.5" data-max="7.5">Spinach</option>
+                        <option value="capsicum" data-min="6.0" data-max="6.8">Capsicum (Bell Pepper)</option>
+                        <option value="okra" data-min="6.0" data-max="6.8">Okra (Bhindi)</option>
+                        <option value="bottle_gourd" data-min="6.0" data-max="7.0">Bottle Gourd (Lauki)</option>
+                        <option value="bitter_gourd" data-min="5.5" data-max="6.5">Bitter Gourd (Karela)</option>
+                        <option value="pumpkin" data-min="6.0" data-max="7.5">Pumpkin</option>
+                        <option value="peas" data-min="6.0" data-max="7.5">Peas</option>
+                    </optgroup>
+
+                    <optgroup label="Fruits">
+                        <option value="mango" data-min="5.5" data-max="7.5">Mango</option>
+                        <option value="banana" data-min="5.5" data-max="7.0">Banana</option>
+                        <option value="guava" data-min="5.0" data-max="7.0">Guava</option>
+                        <option value="apple" data-min="5.5" data-max="6.5">Apple</option>
+                        <option value="grapes" data-min="6.0" data-max="7.0">Grapes</option>
+                        <option value="papaya" data-min="6.0" data-max="6.5">Papaya</option>
+                        <option value="watermelon" data-min="6.0" data-max="7.0">Watermelon</option>
+                        <option value="muskmelon" data-min="6.0" data-max="7.0">Muskmelon</option>
+                        <option value="pomegranate" data-min="5.5" data-max="7.5">Pomegranate</option>
+                        <option value="orange" data-min="5.5" data-max="6.5">Orange</option>
+                        <option value="lemon" data-min="5.5" data-max="6.5">Lemon</option>
+                        <option value="coconut" data-min="5.5" data-max="7.5">Coconut</option>
+                    </optgroup>
+
+                    <optgroup label="Commercial / Cash Crops">
+                        <option value="sugarcane" data-min="6.0" data-max="7.5">Sugarcane</option>
+                        <option value="cotton" data-min="5.5" data-max="7.5">Cotton</option>
+                        <option value="jute" data-min="5.5" data-max="7.0">Jute</option>
+                        <option value="tobacco" data-min="5.5" data-max="6.5">Tobacco</option>
+                        <option value="tea" data-min="4.5" data-max="5.5">Tea</option>
+                        <option value="coffee" data-min="5.0" data-max="6.5">Coffee</option>
+                        <option value="rubber" data-min="4.5" data-max="6.5">Rubber</option>
+                        <option value="cocoa" data-min="6.0" data-max="7.0">Cocoa</option>
+                    </optgroup>
+
+                    <optgroup label="Plantation & Spices">
+                        <option value="cardamom" data-min="5.5" data-max="6.5">Cardamom</option>
+                        <option value="black_pepper" data-min="5.5" data-max="7.0">Black Pepper</option>
+                        <option value="turmeric" data-min="5.5" data-max="7.5">Turmeric</option>
+                        <option value="ginger" data-min="5.5" data-max="6.5">Ginger</option>
+                        <option value="coriander" data-min="6.0" data-max="7.0">Coriander</option>
+                        <option value="cumin" data-min="6.0" data-max="8.0">Cumin</option>
+                        <option value="fenugreek" data-min="6.0" data-max="7.5">Fenugreek</option>
+                        <option value="cinnamon" data-min="5.5" data-max="6.5">Cinnamon</option>
+                        <option value="clove" data-min="5.5" data-max="7.0">Clove</option>
+                    </optgroup>
+                </select>
+                <img id="cropImage" src="images/rice.png" alt="Crop Image" class="crop-image-header">
+            </div>
+        </header>
+
+        <!-- Status Indicator -->
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-label">System Status:</span>
+                <span id="systemStatus" class="status-badge online">Online</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Last Update:</span>
+                <span id="lastUpdate">Never</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Arduino:</span>
+                <button id="connectBtn" class="btn connect-btn">Connect Arduino</button>
+                <span id="arduinoStatus" class="status-badge offline">Disconnected</span>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+
+            <!-- pH Display Card -->
+            <div class="card ph-card">
+                <div class="card-header">
+                    <h2>Current pH Level</h2>
+                    <span class="card-icon">📊</span>
+                </div>
+                <div class="ph-display">
+                    <div class="ph-value" id="phValue">--</div>
+                    <div class="ph-scale">
+                        <div class="scale-bar">
+                            <span class="scale-label acidic">Acidic</span>
+                            <span class="scale-label neutral">Neutral</span>
+                            <span class="scale-label basic">Basic</span>
+                        </div>
+                        <div class="scale-indicator" id="phIndicator"></div>
+                    </div>
+                    <div class="ph-status" id="phStatus">--</div>
+                </div>
+                <div class="card-footer">
+                    <small>Optimal Range: <span id="optimalPHRange">6.5 - 7.5</span></small>
+                </div>
+            </div>
+
+            <!-- Last Pump Used Card -->
+            <div class="card pump-card">
+                <div class="card-header">
+                    <h2>Last Pump Used</h2>
+                    <span class="card-icon">⚙️</span>
+                </div>
+                <div class="pump-info">
+                    <div class="pump-name" id="lastPumpName">None</div>
+                    <div class="pump-time-section">
+                        <div class="info-row">
+                            <span class="label">Time Used:</span>
+                            <span id="lastPumpTime" class="value">--</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Solution:</span>
+                            <span id="lastPumpSolution" class="value">--</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Concentration:</span>
+                            <span id="lastPumpConcentration" class="value">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats Card -->
+            <div class="card stats-card">
+                <div class="card-header">
+                    <h2>Quick Stats</h2>
+                    <span class="card-icon">📈</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Avg pH Today</span>
+                        <span class="stat-value" id="avgPH">--</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">pH Range</span>
+                        <span class="stat-value" id="pHRange">--</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Basic Pump</span>
+                        <span class="stat-value" id="basicPumpCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Acidic Pump</span>
+                        <span class="stat-value" id="acidicPumpCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Graph Section -->
+        <div class="card graph-card">
+            <div class="card-header">
+                <h2>pH History Graph</h2>
+                <div class="graph-controls">
+                    <button id="btn24h" class="btn-time active">24h</button>
+                    <button id="btn7d" class="btn-time">7d</button>
+                    <button id="btnMonth" class="btn-time">Month</button>
+                    <button id="btnClear" class="btn-danger">Clear Data</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="phChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed Log Section -->
+        <div class="card log-card">
+            <div class="card-header">
+                <h2>Pump Activity Log</h2>
+                <span id="logCount" class="log-count">0 entries</span>
+            </div>
+            <div class="log-container" id="logContainer">
+                <p class="empty-state">No pump activity recorded yet</p>
+            </div>
+        </div>
+
+        <!-- Weather Forecast Section -->
+        <div class="weather-section">
+            <div class="card weather-card">
+                <div class="card-header">
+                    <h2>Weather Forecast</h2>
+                    <span class="card-icon">🌤️</span>
+                </div>
+                <div class="weather-container">
+                    <!-- Current Weather -->
+                    <div class="current-weather">
+                        <div class="weather-main">
+                            <div class="weather-icon" id="weatherIcon">🌦️</div>
+                            <div class="weather-info">
+                                <div class="temperature" id="temperature">28°C</div>
+                                <div class="condition" id="condition">Partly Cloudy</div>
+                                <div class="location" id="location">📍 Your Location</div>
+                            </div>
+                        </div>
+                        <div class="feels-like">
+                            <span>Feels Like:</span>
+                            <span id="feelsLike">26°C</span>
+                        </div>
+                    </div>
+
+                    <!-- Weather Details Grid -->
+                    <div class="weather-details-grid">
+                        <div class="weather-detail-item">
+                            <div class="detail-icon">💧</div>
+                            <div class="detail-label">Humidity</div>
+                            <div class="detail-value" id="humidity">65%</div>
+                        </div>
+                        <div class="weather-detail-item">
+                            <div class="detail-icon">💨</div>
+                            <div class="detail-label">Wind Speed</div>
+                            <div class="detail-value" id="windSpeed">12 km/h</div>
+                        </div>
+                        <div class="weather-detail-item">
+                            <div class="detail-icon">🌡️</div>
+                            <div class="detail-label">Pressure</div>
+                            <div class="detail-value" id="pressure">1013 mb</div>
+                        </div>
+                        <div class="weather-detail-item">
+                            <div class="detail-icon">👁️</div>
+                            <div class="detail-label">Visibility</div>
+                            <div class="detail-value" id="visibility">10 km</div>
+                        </div>
+                        <div class="weather-detail-item">
+                            <div class="detail-icon">☀️</div>
+                            <div class="detail-label">UV Index</div>
+                            <div class="detail-value" id="uvIndex">5</div>
+                        </div>
+                        <div class="weather-detail-item">
+                            <div class="detail-icon">🌊</div>
+                            <div class="detail-label">Dew Point</div>
+                            <div class="detail-value" id="dewPoint">18°C</div>
+                        </div>
+                    </div>
+
+                    <!-- AQI Section -->
+                    <div class="aqi-section">
+                        <div class="aqi-header">
+                            <h3>Air Quality Index (AQI)</h3>
+                            <div class="aqi-status" id="aqiStatus">Good</div>
+                        </div>
+                        <div class="aqi-bar-container">
+                            <div class="aqi-bar" id="aqiBar" style="width: 35%;">
+                                <span class="aqi-value" id="aqiValue">45</span>
+                            </div>
+                        </div>
+                        <div class="aqi-details-grid">
+                            <div class="aqi-detail">
+                                <span class="aqi-param">PM2.5</span>
+                                <span class="aqi-param-value" id="pm25">15 μg/m³</span>
+                            </div>
+                            <div class="aqi-detail">
+                                <span class="aqi-param">PM10</span>
+                                <span class="aqi-param-value" id="pm10">25 μg/m³</span>
+                            </div>
+                            <div class="aqi-detail">
+                                <span class="aqi-param">O3</span>
+                                <span class="aqi-param-value" id="o3">35 ppb</span>
+                            </div>
+                            <div class="aqi-detail">
+                                <span class="aqi-param">NO2</span>
+                                <span class="aqi-param-value" id="no2">20 ppb</span>
+                            </div>
+                            <div class="aqi-detail">
+                                <span class="aqi-param">SO2</span>
+                                <span class="aqi-param-value" id="so2">8 ppb</span>
+                            </div>
+                            <div class="aqi-detail">
+                                <span class="aqi-param">CO</span>
+                                <span class="aqi-param-value" id="co">0.5 ppm</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hourly Forecast -->
+                    <div class="hourly-forecast">
+                        <h3>Hourly Forecast</h3>
+                        <div class="hourly-items" id="hourlyForecast">
+                            <!-- Generated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- 5-Day Forecast -->
+                    <div class="daily-forecast">
+                        <h3>5-Day Forecast</h3>
+                        <div class="daily-items" id="dailyForecast">
+                            <!-- Generated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Weather Alerts -->
+                    <div class="weather-alerts" id="weatherAlerts" style="display: none;">
+                        <h3>⚠️ Weather Alerts</h3>
+                        <div class="alert-items" id="alertItems">
+                            <!-- Generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Connect Arduino via USB for real-time data | Last synced: <span id="footerTime">Never</span></p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
